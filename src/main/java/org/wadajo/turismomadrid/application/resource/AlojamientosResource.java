@@ -9,7 +9,7 @@ public class AlojamientosResource {
 
     AlojamientosService service;
 
-    public  AlojamientosResource(AlojamientosService service) {
+    public AlojamientosResource(AlojamientosService service) {
         this.service = service;
     }
 
