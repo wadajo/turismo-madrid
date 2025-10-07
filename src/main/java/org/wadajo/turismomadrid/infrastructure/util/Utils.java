@@ -19,7 +19,7 @@ public class Utils {
         var alojamientosTuristicos=new ArrayList<AlojamientoTuristico>();
         listaRaw.forEach(alojamientoTuristicoRaw -> {
             switch (alojamientoTuristicoRaw.alojamiento_tipo()) {
-                case "APARTAMENTO RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico.ApartamentoRural(
+                case "APARTAMENTO RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -35,7 +35,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.APARTAMENTO_RURAL
                 ));
-                case "APART-TURISTICO" -> alojamientosTuristicos.add(new AlojamientoTuristico.ApartTuristico(
+                case "APART-TURISTICO" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -51,7 +51,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.APART_TURISTICO
                 ));
-                case "CAMPING" -> alojamientosTuristicos.add(new AlojamientoTuristico.Camping(
+                case "CAMPING" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -67,7 +67,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.CAMPING
                 ));
-                case "CASA HUESPEDES" -> alojamientosTuristicos.add(new AlojamientoTuristico.CasaHuespedes(
+                case "CASA HUESPEDES" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -83,7 +83,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.CASA_HUESPEDES
                 ));
-                case "CASA RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico.CasaRural(
+                case "CASA RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -99,7 +99,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.CASA_RURAL
                 ));
-                case "HOSTAL" -> alojamientosTuristicos.add(new AlojamientoTuristico.Hostal(
+                case "HOSTAL" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -115,7 +115,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.HOSTAL
                 ));
-                case "HOSTERIAS" -> alojamientosTuristicos.add(new AlojamientoTuristico.Hosteria(
+                case "HOSTERIAS" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -131,7 +131,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.HOSTERIAS
                 ));
-                case "HOTEL" -> alojamientosTuristicos.add(new AlojamientoTuristico.Hotel(
+                case "HOTEL" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -147,7 +147,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.HOTEL
                 ));
-                case "HOTEL-APART." -> alojamientosTuristicos.add(new AlojamientoTuristico.HotelApart(
+                case "HOTEL-APART." -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -163,7 +163,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.HOTEL_APART
                 ));
-                case "HOTEL RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico.HotelRural(
+                case "HOTEL RURAL" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -179,7 +179,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.HOTEL_RURAL
                 ));
-                case "PENSION" -> alojamientosTuristicos.add(new AlojamientoTuristico.Pension(
+                case "PENSION" -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
@@ -195,7 +195,7 @@ public class Utils {
                     alojamientoTuristicoRaw.localidad(),
                     TipoAlojamiento.PENSION
                 ));
-                case "VIVIENDAS DE USO TU " -> alojamientosTuristicos.add(new AlojamientoTuristico.ViviendaTuristica(
+                case "VIVIENDAS DE USO TU " -> alojamientosTuristicos.add(new AlojamientoTuristico(
                     alojamientoTuristicoRaw.via_tipo(),
                     alojamientoTuristicoRaw.via_nombre(),
                     alojamientoTuristicoRaw.numero(),
