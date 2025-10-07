@@ -1,6 +1,5 @@
 package org.wadajo.turismomadrid.application.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
@@ -20,7 +19,7 @@ public class AlojamientosResource {
 
     @Query
     @Description("Devuelve todos los alojamientos turisticos de la Comunidad de Madrid")
-    public List<AlojamientoTuristico> alojamientosTuristicos() throws JsonProcessingException {
+    public List<AlojamientoTuristico> alojamientosTuristicos() {
         return service.getAlojamientosTotales();
     }
 }
