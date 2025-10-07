@@ -1,7 +1,5 @@
 package org.wadajo.turismomadrid.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.wadajo.turismomadrid.application.client.AlojamientosClient;
@@ -25,13 +23,12 @@ public class AlojamientosService {
         this.client = client;
     }
 
-    public List<AlojamientoTuristico> getAlojamientosTotales() throws JsonProcessingException {
-        var responseRawString = client.getResponseString();
-        return getOrderedAlojamientosTuristicosFromRawString(responseRawString);
+    public List<AlojamientoTuristico> getAlojamientosTotales() {
+        var responseRaw = client.getResponseWrapper();
+        return getOrderedAlojamientosTuristicosFromWrapper(responseRaw);
     }
 
-    private static List<AlojamientoTuristico> getOrderedAlojamientosTuristicosFromRawString(String responseString) throws JsonProcessingException {
-        var responseRaw = new JsonMapper().readValue(responseString, AlojamientosTuristicosResponseDto.class);
+    private List<AlojamientoTuristico> getOrderedAlojamientosTuristicosFromWrapper(AlojamientosTuristicosResponseDto responseRaw) {
         if (Objects.nonNull(responseRaw.data())) {
             var listaRaw = responseRaw.data();
             listaRaw.sort(Comparator.comparing(AlojamientoTuristicoRaw::alojamiento_tipo)
@@ -41,6 +38,5 @@ public class AlojamientosService {
             return Collections.emptyList();
         }
     }
-
 
 }
