@@ -16,6 +16,8 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <wiremock.version>4.0.0-beta.15</wiremock.version>
+        <mockito.version>5.20.0</mockito.version>
+        <assertj.version>4.0.0-M1</assertj.version>
     </properties>
 
     <dependencyManagement>
@@ -67,6 +69,17 @@
             <artifactId>wiremock</artifactId>
             <scope>test</scope>
             <version>${wiremock.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
