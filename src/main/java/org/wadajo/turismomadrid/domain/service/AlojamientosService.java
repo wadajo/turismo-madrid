@@ -7,10 +7,8 @@ import org.wadajo.turismomadrid.domain.dto.cmadrid.AlojamientoTuristicoRaw;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.AlojamientosTuristicosResponseDto;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import static org.wadajo.turismomadrid.infrastructure.util.Utils.convertFromRaw;
 
@@ -29,14 +27,10 @@ public class AlojamientosService {
     }
 
     private List<AlojamientoTuristico> getOrderedAlojamientosTuristicosFromWrapper(AlojamientosTuristicosResponseDto responseRaw) {
-        if (Objects.nonNull(responseRaw.data())) {
-            var listaRaw = responseRaw.data();
-            listaRaw.sort(Comparator.comparing(AlojamientoTuristicoRaw::alojamiento_tipo)
-                .thenComparing(AlojamientoTuristicoRaw::cdpostal));
-            return convertFromRaw(listaRaw);
-        } else {
-            return Collections.emptyList();
-        }
+        var listaRaw = responseRaw.data();
+        listaRaw.sort(Comparator.comparing(AlojamientoTuristicoRaw::alojamiento_tipo)
+            .thenComparing(AlojamientoTuristicoRaw::cdpostal));
+        return convertFromRaw(listaRaw);
     }
 
 }
