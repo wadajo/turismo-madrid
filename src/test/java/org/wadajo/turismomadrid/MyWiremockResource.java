@@ -12,18 +12,19 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.wadajo.turismomadrid.util.TestConstants.ALOJAMIENTOS_RAW_STUBBING_FILE;
 
-public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
+public class MyWiremockResource implements QuarkusTestResourceLifecycleManager {
 
     private WireMockServer wireMockServer;
 
     @Override
     public Map<String, String> start() {
-        wireMockServer = new WireMockServer();
+        wireMockServer = new WireMockServer(8089);
         wireMockServer.start();
 
         try {
             JsonNode alojamientosRaw = new ObjectMapper().readTree(new File(ALOJAMIENTOS_RAW_STUBBING_FILE));
 
+            configureFor("localhost", 8089);
             stubFor(get("/")
                 .willReturn(aResponse()
                     .withStatus(200)
@@ -38,9 +39,10 @@ public class WireMockExtensions implements QuarkusTestResourceLifecycleManager {
     }
 
     @Override
-    public void stop() {
-        if (null != wireMockServer) {
+    public synchronized void stop() {
+        if (wireMockServer != null) {
             wireMockServer.stop();
+            wireMockServer = null;
         }
     }
 }

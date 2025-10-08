@@ -7,7 +7,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.wadajo.turismomadrid.WireMockExtensions;
+import org.wadajo.turismomadrid.MyWiremockResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import static io.restassured.RestAssured.given;
 import static org.wadajo.turismomadrid.util.TestConstants.ALOJAMIENTOS_QUERY_JSON_FILE;
 
 @QuarkusTest
-@QuarkusTestResource(WireMockExtensions.class)
-class TurismoAcceptanceIT {
+@QuarkusTestResource(MyWiremockResource.class)
+class TurismoAcceptanceTest {
 
     @Test
     void debeDevolverTodosLosAlojamientosTuristicosAlPedirLaQuery() throws IOException {
