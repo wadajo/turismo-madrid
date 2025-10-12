@@ -3,7 +3,7 @@ package org.wadajo.turismomadrid.acceptance;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,9 @@ import java.io.IOException;
 import static io.restassured.RestAssured.given;
 import static org.wadajo.turismomadrid.util.TestConstants.ALOJAMIENTOS_QUERY_JSON_FILE;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 @QuarkusTestResource(MyWiremockResource.class)
-class TurismoAcceptanceTest {
+class TurismoAcceptanceIT {
 
     @Test
     void debeDevolverTodosLosAlojamientosTuristicosAlPedirLaQuery() throws IOException {
