@@ -2,24 +2,30 @@ package org.wadajo.turismomadrid.application.resource;
 
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
+import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
-import org.wadajo.turismomadrid.domain.service.AlojamientosService;
+import org.wadajo.turismomadrid.domain.service.TurismoService;
 
 import java.util.List;
 
 @GraphQLApi
 public class AlojamientosResource {
 
-    AlojamientosService service;
+    TurismoService service;
 
-    public AlojamientosResource(AlojamientosService service) {
+    public AlojamientosResource(TurismoService service) {
         this.service = service;
     }
 
     @Query
     @Description("Devuelve todos los alojamientos turisticos de la Comunidad de Madrid")
     public List<AlojamientoTuristico> alojamientosTuristicos() {
-        return service.getAlojamientosTotales();
+        return service.getAlojamientosTuristicosEnRemoto();
+    }
+
+    @Mutation
+    public String actualizarDB(){
+        return service.guardarTodosLosAlojamientosRemotosEnDb();
     }
 }

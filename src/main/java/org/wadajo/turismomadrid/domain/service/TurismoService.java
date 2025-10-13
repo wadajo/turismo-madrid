@@ -3,7 +3,6 @@ package org.wadajo.turismomadrid.domain.service;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jboss.logging.Logger;
-import org.mapstruct.factory.Mappers;
 import org.wadajo.turismomadrid.application.repository.AlojamientoRepository;
 import org.wadajo.turismomadrid.domain.document.AlojamientoDocument;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
@@ -27,13 +26,14 @@ import static org.wadajo.turismomadrid.infrastructure.constants.Constants.CONTAD
 public class TurismoService {
 
     private final AlojamientoRepository alojamientoRepository;
-    
-    private final AlojamientoDocumentMapper alojamientoDocumentMapper = Mappers.getMapper(AlojamientoDocumentMapper.class);
 
     private final AlojamientosService alojamientosService;
 
-    public TurismoService(AlojamientoRepository alojamientoRepository, AlojamientosService alojamientosService) {
+    private final AlojamientoDocumentMapper alojamientoDocumentMapper;
+
+    public TurismoService(AlojamientoRepository alojamientoRepository, AlojamientoDocumentMapper alojamientoDocumentMapper, AlojamientosService alojamientosService) {
         this.alojamientoRepository = alojamientoRepository;
+        this.alojamientoDocumentMapper = alojamientoDocumentMapper;
         this.alojamientosService = alojamientosService;
     }
 
