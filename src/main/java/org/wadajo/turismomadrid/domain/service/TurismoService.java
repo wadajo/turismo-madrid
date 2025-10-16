@@ -11,13 +11,9 @@ import org.wadajo.turismomadrid.infrastructure.mapper.AlojamientoDocumentMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento.*;
 import static org.wadajo.turismomadrid.infrastructure.constants.Constants.CONTADO_UN;
@@ -184,106 +180,6 @@ public class TurismoService {
         return alojamientoDocumentMapper.convert(alojamientoTuristicoEnRemoto);
     }
 
-    public String eliminarTodosLosAlojamientosObsoletosDeBbDd() {
-        var todosLosAlojamientosEnRemoto=new ArrayList<>(alojamientosService.getAlojamientosTotales());
-        var cuentaTotalAlojamientosEnDb = getCuentaTotalAlojamientosEnDb();
-        if (cuentaTotalAlojamientosEnDb.get()>todosLosAlojamientosEnRemoto.size()) {
-            Log.info("Se han encontrado alojamientos obsoletos en DB.");
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, APARTAMENTO_RURAL));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, APART_TURISTICO));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, CAMPING));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, CASA_HUESPEDES));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, CASA_RURAL));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, HOSTAL));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, HOSTERIAS));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, HOTEL_APART));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, HOTEL));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, HOTEL_RURAL));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, PENSION));
-            eliminarAlojamientosTuristicosObsoletos(getAlojamientosDeEsteTipo(todosLosAlojamientosEnRemoto, VIVIENDAS_TURISTICAS));
-            return "Han sido eliminados alojamientos obsoletos.";
-        } else {
-            Log.info("No se han encontrado alojamientos obsoletos en DB.");
-            return "No han sido eliminados alojamientos obsoletos.";
-        }
-    }
-
-    private static List<AlojamientoTuristico> getAlojamientosDeEsteTipo(ArrayList<AlojamientoTuristico> todosLosAlojamientosEnRemoto, TipoAlojamiento tipoAlojamiento) {
-        return todosLosAlojamientosEnRemoto.stream().filter(filtrarPorTipo(tipoAlojamiento)).toList();
-    }
-
-    private static Predicate<AlojamientoTuristico> filtrarPorTipo(TipoAlojamiento tipoAlojamiento) {
-        return alojamientoTuristico -> alojamientoEquals(alojamientoTuristico, tipoAlojamiento);
-    }
-
-    private static boolean alojamientoEquals(AlojamientoTuristico alojamientoTuristico, TipoAlojamiento tipoAlojamiento) {
-        return alojamientoTuristico.alojamiento_tipo().equals(tipoAlojamiento);
-    }
-
-    private AtomicLong getCuentaTotalAlojamientosEnDb() {
-        var cuentaTotalAlojamientosEnDb=new AtomicLong();
-        cuentaTotalAlojamientosEnDb.addAndGet(alojamientoRepository.count());
-        Log.infof("Total alojamientos en DB: %d", cuentaTotalAlojamientosEnDb.get());
-        return cuentaTotalAlojamientosEnDb;
-    }
-
-    private void eliminarAlojamientosTuristicosObsoletos(List<AlojamientoTuristico> alojamientosTuristicosRemotoDeEsteTipo) {
-        var alojamientosTuristicosEnBbDd=alojamientoRepository.listAll();
-        if (alojamientosTuristicosEnBbDd.isEmpty())
-            return;
-        List<AlojamientoDocument> alojamientosTuristicosObsoletos = new ArrayList<>();
-        for (AlojamientoDocument alojamientoEnBbDd : alojamientosTuristicosEnBbDd) {
-            if (noEstaEnLaListaRemota(alojamientoEnBbDd, alojamientosTuristicosRemotoDeEsteTipo)) {
-                alojamientosTuristicosObsoletos.add(alojamientoEnBbDd);
-            }
-        }
-        if (alojamientosTuristicosObsoletos.isEmpty()) {
-            String input=alojamientosTuristicosEnBbDd.getFirst().getClass().toString();
-            Pattern pattern = Pattern.compile("\\.(\\w+?)Document");
-            Matcher matcher = pattern.matcher(input);
-            if (matcher.find()) {
-                String result = matcher.group(1);
-                Log.infof("No se han encontrado alojamientos obsoletos del tipo: %s", result);
-            } else {
-                Log.info("No se han encontrado alojamientos obsoletos.");
-            }
-        } else {
-            Log.infof("Encontrados %d alojamiento(s) obsoleto(s) del tipo: %s ", alojamientosTuristicosObsoletos.size(),alojamientosTuristicosEnBbDd.getFirst().alojamiento_tipo);
-            Log.infof("Encontrado alojamiento obsoleto denominado: %s ", alojamientosTuristicosObsoletos.getFirst().denominacion);
-            alojamientosTuristicosObsoletos.parallelStream()
-                .forEach(alojamientoObsoleto -> {
-                    alojamientoRepository.delete(alojamientoObsoleto);
-                    Log.debugf("Borrado alojamiento obsoleto denominado: %s ", alojamientoObsoleto.denominacion);
-                    }
-                );
-        }
-    }
-
-    private boolean noEstaEnLaListaRemota(AlojamientoDocument alojamientoEnBbDd, List<AlojamientoTuristico> alojamientosTuristicosRemotoDeEsteTipo) {
-        return alojamientosTuristicosRemotoDeEsteTipo.stream()
-            .noneMatch(alojamientoTuristicoRemoto -> sonEquivalentes(alojamientoEnBbDd, alojamientoTuristicoRemoto));
-    }
-
-    private static boolean sonEquivalentes(AlojamientoDocument alojamientoDocument, AlojamientoTuristico alojamientoTuristicoRemoto) {
-        return esEquivalenteEsteDocumentAlRemoto(alojamientoDocument, alojamientoTuristicoRemoto);
-    }
-
-    private static boolean esEquivalenteEsteDocumentAlRemoto(AlojamientoDocument alojamientoEnBbDd, AlojamientoTuristico alojamientoTuristicoRemoto) {
-        return Objects.equals(alojamientoEnBbDd.via_tipo, alojamientoTuristicoRemoto.via_tipo()) &&
-            Objects.equals(alojamientoEnBbDd.via_nombre, alojamientoTuristicoRemoto.via_nombre()) &&
-            Objects.equals(alojamientoEnBbDd.numero, alojamientoTuristicoRemoto.numero()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.portal,""), alojamientoTuristicoRemoto.portal()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.bloque,""), alojamientoTuristicoRemoto.bloque()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.planta,""), alojamientoTuristicoRemoto.planta()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.puerta,""), alojamientoTuristicoRemoto.puerta()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.signatura,""), alojamientoTuristicoRemoto.signatura()) &&
-            Objects.equals(alojamientoEnBbDd.categoria, alojamientoTuristicoRemoto.categoria()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.escalera,""), alojamientoTuristicoRemoto.escalera()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.denominacion,""), alojamientoTuristicoRemoto.denominacion()) &&
-            Objects.equals(Objects.requireNonNullElse(alojamientoEnBbDd.codpostal,""), alojamientoTuristicoRemoto.cdpostal()) &&
-            Objects.equals(alojamientoEnBbDd.localidad, alojamientoTuristicoRemoto.localidad());
-    }
-
     public void borrarTodo() {
         alojamientoRepository.deleteAll();
         Log.info("Borrada alojamientosTuristicos");
@@ -291,21 +187,7 @@ public class TurismoService {
 
     public List<AlojamientoTuristico> getAlojamientosByType(TipoAlojamiento tipo) {
         var listaFiltrada = alojamientosService.getAlojamientosTotales().stream()
-            .filter(alojamientoTuristico ->
-                switch (alojamientoTuristico.alojamiento_tipo()) {
-                    case APARTAMENTO_RURAL -> tipo == APARTAMENTO_RURAL;
-                    case APART_TURISTICO -> tipo == APART_TURISTICO;
-                    case CAMPING -> tipo == CAMPING;
-                    case CASA_HUESPEDES -> tipo == CASA_HUESPEDES;
-                    case CASA_RURAL -> tipo == CASA_RURAL;
-                    case HOSTAL -> tipo == HOSTAL;
-                    case HOSTERIAS -> tipo == HOSTERIAS;
-                    case HOTEL -> tipo == HOTEL;
-                    case HOTEL_APART -> tipo == HOTEL_APART;
-                    case HOTEL_RURAL -> tipo == HOTEL_RURAL;
-                    case PENSION -> tipo == PENSION;
-                    case VIVIENDAS_TURISTICAS -> tipo == VIVIENDAS_TURISTICAS;
-                })
+            .filter(alojamientoTuristico -> alojamientoTuristico.alojamiento_tipo() == tipo)
             .toList();
         generarMapaConLaCuenta(listaFiltrada);
         return listaFiltrada;

@@ -2,10 +2,8 @@ package org.wadajo.turismomadrid.domain.model;
 
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.Type;
-import org.jspecify.annotations.NullMarked;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
 
-@NullMarked
 @Type("AlojamientoTuristico")
 @Description("Representa un alojamiento turístico en la Comunidad de Madrid")
 public record AlojamientoTuristico (
