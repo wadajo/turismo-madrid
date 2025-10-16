@@ -20,9 +20,9 @@ public interface AlojamientoDocumentMapper {
     @Mapping(target = "categoria", qualifiedBy = EmptyStringToNull.class)
     @Mapping(target = "escalera", qualifiedBy = EmptyStringToNull.class)
     @Mapping(target = "codpostal", source = "cdpostal", qualifiedBy = EmptyStringToNull.class)
-    @Mapping(target = "alojamiento_tipo", constant = "Apartamento rural")
+    @Mapping(target = "alojamiento_tipo", expression = "java(alojamientoTuristico.alojamiento_tipo().printValue)")
     @Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
-    AlojamientoDocument convert(@Nonnull AlojamientoTuristico apartamentoRural);
+    AlojamientoDocument convert(@Nonnull AlojamientoTuristico alojamientoTuristico);
 
     @EmptyStringToNull
     default String emptyStringToNull(String s) {

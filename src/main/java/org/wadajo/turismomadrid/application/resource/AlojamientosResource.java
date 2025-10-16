@@ -25,6 +25,7 @@ public class AlojamientosResource {
     }
 
     @Mutation
+    @Description("Actualiza la base de datos con los alojamientos turisticos de la Comunidad de Madrid")
     public String actualizarDB(){
         return service.guardarTodosLosAlojamientosRemotosEnDb();
     }
