@@ -44,53 +44,47 @@ public class TurismoService {
         Log.infof("Total alojamientos turísticos en origen: %d", todosLosAlojamientosEnRemoto.size());
         AtomicLong cuenta = new AtomicLong();
 
-        List<AlojamientoDocument> apartamentosRuralesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> apartTuristicosDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> campingsDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> casasHuespedesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> casasRuralesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> hostalesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> hosteriasDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> hotelesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> hotelesApartDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> hotelesRuralesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> pensionesDocumentList = new ArrayList<>();
-        List<AlojamientoDocument> viviendasTuristicasDocumentList = new ArrayList<>();
+        var apartamentosRuralesDocumentList = new ArrayList<AlojamientoDocument>();
+        var apartTuristicosDocumentList = new ArrayList<AlojamientoDocument>();
+        var campingsDocumentList = new ArrayList<AlojamientoDocument>();
+        var casasHuespedesDocumentList = new ArrayList<AlojamientoDocument>();
+        var casasRuralesDocumentList = new ArrayList<AlojamientoDocument>();
+        var hostalesDocumentList = new ArrayList<AlojamientoDocument>();
+        var hosteriasDocumentList = new ArrayList<AlojamientoDocument>();
+        var hotelesDocumentList = new ArrayList<AlojamientoDocument>();
+        var hotelesApartDocumentList = new ArrayList<AlojamientoDocument>();
+        var hotelesRuralesDocumentList = new ArrayList<AlojamientoDocument>();
+        var pensionesDocumentList = new ArrayList<AlojamientoDocument>();
+        var viviendasTuristicasDocumentList = new ArrayList<AlojamientoDocument>();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            todosLosAlojamientosEnRemoto
-                .forEach(alojamientoTuristicoEnRemoto ->
-                    executor.submit(() -> {
-                        cuenta.incrementAndGet();
-                        switch (alojamientoTuristicoEnRemoto.alojamiento_tipo()) {
-                            case APART_TURISTICO ->
-                                apartTuristicosDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case APARTAMENTO_RURAL ->
-                                apartamentosRuralesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case CAMPING ->
-                                campingsDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case CASA_HUESPEDES ->
-                                casasHuespedesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case CASA_RURAL ->
-                                casasRuralesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case HOSTAL ->
-                                hostalesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case HOSTERIAS ->
-                                hosteriasDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case HOTEL ->
-                                hotelesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case HOTEL_APART ->
-                                hotelesApartDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case HOTEL_RURAL ->
-                                hotelesRuralesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case PENSION ->
-                                pensionesDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                            case VIVIENDAS_TURISTICAS ->
-                                viviendasTuristicasDocumentList.add(convertToAlojamientoDocument(alojamientoTuristicoEnRemoto));
-                        }
-                    }));
-        } catch (Exception e) {
-            Log.error("Error al procesar alojamientos turísticos", e);
+        for (AlojamientoTuristico unAlojamientoEnRemoto : todosLosAlojamientosEnRemoto) {
+            cuenta.incrementAndGet();
+            switch (unAlojamientoEnRemoto.alojamiento_tipo()) {
+                case APART_TURISTICO ->
+                    apartTuristicosDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case APARTAMENTO_RURAL ->
+                    apartamentosRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case CAMPING ->
+                    campingsDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case CASA_HUESPEDES ->
+                    casasHuespedesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case CASA_RURAL ->
+                    casasRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case HOSTAL ->
+                    hostalesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case HOSTERIAS ->
+                    hosteriasDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case HOTEL ->
+                    hotelesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case HOTEL_APART ->
+                    hotelesApartDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case HOTEL_RURAL ->
+                    hotelesRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case PENSION ->
+                    pensionesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+                case VIVIENDAS_TURISTICAS ->
+                    viviendasTuristicasDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+            }
         }
         Log.info("Apart turísticos en lista guardar del servicio: " + apartTuristicosDocumentList.size());
         Log.info("Apartamentos rurales en lista guardar del servicio: " + apartamentosRuralesDocumentList.size());
@@ -169,11 +163,11 @@ public class TurismoService {
             });
             scope.join();
             generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
-            return "Han sido guardados en DB: "+ cuenta+" alojamientos.";
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            Log.error("Error al guardar alojamientos turísticos en DB", e);
         }
-
+        return "Han sido guardados en DB: "+ cuenta+" alojamientos.";
     }
 
     private AlojamientoDocument convertToAlojamientoDocument(AlojamientoTuristico alojamientoTuristicoEnRemoto) {
