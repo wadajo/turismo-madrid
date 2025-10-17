@@ -1,10 +1,12 @@
 package org.wadajo.turismomadrid.domain.document;
 
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.types.ObjectId;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
+@MongoEntity(collection = "alojamientos")
 public class AlojamientoDocument {
 
     public ObjectId id; // used by MongoDB for the _id field

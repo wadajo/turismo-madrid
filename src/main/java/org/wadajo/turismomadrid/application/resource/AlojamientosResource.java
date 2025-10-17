@@ -29,4 +29,10 @@ public class AlojamientosResource {
     public String actualizarDB(){
         return service.guardarTodosLosAlojamientosRemotosEnDb();
     }
+
+    @Mutation("borrarTodo")
+    @Description("Borra todos los alojamientos turisticos de la base de datos")
+    public String borrarDB(){
+        return service.borrarTodosLosAlojamientosEnDb();
+    }
 }

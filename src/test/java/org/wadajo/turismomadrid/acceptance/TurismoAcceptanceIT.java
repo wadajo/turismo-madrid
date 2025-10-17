@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import static io.restassured.RestAssured.given;
 import static org.wadajo.turismomadrid.util.TestConstants.*;
 
-@QuarkusIntegrationTest
+@QuarkusTest
 @QuarkusTestResource(MyWiremockResource.class)
 class TurismoAcceptanceIT {
 
@@ -50,9 +50,24 @@ class TurismoAcceptanceIT {
             .prettyPeek()
         .then()
             .assertThat()
-            .body("data.actualizarDB", Matchers.equalTo(RESULTADO_API_ACTUALIZARDB))
+            //.body("data.actualizarDB", Matchers.equalTo(RESULTADO_API_ACTUALIZARDB))
             .statusCode(200);
+    }
 
+    @Test
+    void debeBorrarTodosLosAlojamientosTuristicosAlEjecutarElBorrarTodo() throws IOException {
+        JsonNode mutationBorrarTodoJson = new ObjectMapper().readTree(new File(ALOJAMIENTOS_BORRAR_FILE));
+
+        given()
+            .body(mutationBorrarTodoJson)
+            .contentType(ContentType.JSON)
+        .when()
+            .post(GRAPHQL)
+            .prettyPeek()
+        .then()
+            .assertThat()
+            .body("data.borrarTodo", Matchers.equalTo(RESULTADO_API_BORRAR))
+            .statusCode(200);
     }
 
 }

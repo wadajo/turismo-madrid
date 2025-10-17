@@ -86,31 +86,6 @@ public class TurismoService {
                     viviendasTuristicasDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
             }
         }
-        Log.info("Apart turísticos en lista guardar del servicio: " + apartTuristicosDocumentList.size());
-        Log.info("Apartamentos rurales en lista guardar del servicio: " + apartamentosRuralesDocumentList.size());
-        Log.info("Campings en lista guardar del servicio: " + campingsDocumentList.size());
-        Log.info("Casas de huéspedes en lista guardar del servicio: " + casasHuespedesDocumentList.size());
-        Log.info("Casas rurales en lista guardar del servicio: " + casasRuralesDocumentList.size());
-        Log.info("Hostales en lista guardar del servicio: " + hostalesDocumentList.size());
-        Log.info("Hosterías en lista guardar del servicio: " + hosteriasDocumentList.size());
-        Log.info("Hoteles en lista guardar del servicio: " + hotelesDocumentList.size());
-        Log.info("Hoteles apart en lista guardar del servicio: " + hotelesApartDocumentList.size());
-        Log.info("Hoteles rurales en lista guardar del servicio: " + hotelesRuralesDocumentList.size());
-        Log.info("Pensiones en lista guardar del servicio: " + pensionesDocumentList.size());
-        Log.info("Viviendas turísticas en lista guardar del servicio: " + viviendasTuristicasDocumentList.size());
-        Log.info("Suma de alojamientos en listas guardar del servicio: " +
-            (apartTuristicosDocumentList.size() +
-            apartamentosRuralesDocumentList.size() +
-            campingsDocumentList.size() +
-            casasHuespedesDocumentList.size() +
-            casasRuralesDocumentList.size() +
-            hostalesDocumentList.size() +
-            hosteriasDocumentList.size() +
-            hotelesDocumentList.size() +
-            hotelesApartDocumentList.size() +
-            hotelesRuralesDocumentList.size() +
-            pensionesDocumentList.size() +
-            viviendasTuristicasDocumentList.size()));
 
         try (var scope = StructuredTaskScope.open()) {
             scope.fork(() -> {
@@ -176,7 +151,7 @@ public class TurismoService {
 
     public void borrarTodo() {
         alojamientoRepository.deleteAll();
-        Log.info("Borrada alojamientosTuristicos");
+        Log.info("Borrada alojamientos");
     }
 
     public List<AlojamientoTuristico> getAlojamientosByType(TipoAlojamiento tipo) {
@@ -185,6 +160,11 @@ public class TurismoService {
             .toList();
         generarMapaConLaCuenta(listaFiltrada);
         return listaFiltrada;
+    }
+
+    public String borrarTodosLosAlojamientosEnDb() {
+        borrarTodo();
+        return "Borrados";
     }
 
     private static void generarMapaConLaCuenta(List<AlojamientoTuristico> listaFinal) {
