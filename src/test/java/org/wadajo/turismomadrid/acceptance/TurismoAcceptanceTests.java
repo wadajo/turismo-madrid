@@ -18,7 +18,7 @@ import static org.wadajo.turismomadrid.util.TestConstants.*;
 
 @QuarkusTest
 @QuarkusTestResource(MyWiremockResource.class)
-class TurismoAcceptanceIT {
+class TurismoAcceptanceTests {
 
     @Test
     void debeDevolverTodosLosAlojamientosTuristicosAlPedirLaQuery() throws IOException {

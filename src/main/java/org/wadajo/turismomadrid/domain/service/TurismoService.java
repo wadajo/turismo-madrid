@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento.*;
@@ -87,61 +86,33 @@ public class TurismoService {
             }
         }
 
-        try (var scope = StructuredTaskScope.open()) {
-            scope.fork(() -> {
-                alojamientoRepository.persist(apartamentosRuralesDocumentList);
-                Log.info(String.format("Guardados en DB %s apartamentos rurales.", apartamentosRuralesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(apartTuristicosDocumentList);
-                Log.info(String.format("Guardados en DB %s apart turísticos.", apartTuristicosDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(campingsDocumentList);
-                Log.info(String.format("Guardados en DB %s campings.", campingsDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(casasHuespedesDocumentList);
-                Log.info(String.format("Guardados en DB %s casas de huéspedes.", casasHuespedesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(casasRuralesDocumentList);
-                Log.info(String.format("Guardados en DB %s casas rurales.", casasRuralesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(hostalesDocumentList);
-                Log.info(String.format("Guardados en DB %s hostales.", hostalesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(hosteriasDocumentList);
-                Log.info(String.format("Guardados en DB %s hosterías.", hosteriasDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(hotelesDocumentList);
-                Log.info(String.format("Guardados en DB %s hoteles.", hotelesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(hotelesApartDocumentList);
-                Log.info(String.format("Guardados en DB %s hoteles apart.", hotelesApartDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(hotelesRuralesDocumentList);
-                Log.info(String.format("Guardados en DB %s hoteles rurales.", hotelesRuralesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(pensionesDocumentList);
-                Log.info(String.format("Guardados en DB %s pensiones.", pensionesDocumentList.size()));
-            });
-            scope.fork(() -> {
-                alojamientoRepository.persist(viviendasTuristicasDocumentList);
-                Log.info(String.format("Guardados en DB %s viviendas turísticas.", viviendasTuristicasDocumentList.size()));
-            });
-            scope.join();
-            generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            Log.error("Error al guardar alojamientos turísticos en DB", e);
-        }
+        alojamientoRepository.persist(apartamentosRuralesDocumentList);
+        Log.infof("Guardados en DB {} apartamentos rurales.", apartamentosRuralesDocumentList.size());
+        alojamientoRepository.persist(apartTuristicosDocumentList);
+        Log.infof("Guardados en DB {} apart turísticos.", apartTuristicosDocumentList.size());
+        alojamientoRepository.persist(campingsDocumentList);
+        Log.infof("Guardados en DB {} campings.", campingsDocumentList.size());
+        alojamientoRepository.persist(casasHuespedesDocumentList);
+        Log.infof("Guardados en DB {} casas de huéspedes.", casasHuespedesDocumentList.size());
+        alojamientoRepository.persist(casasRuralesDocumentList);
+        Log.infof("Guardados en DB {} casas rurales.", casasRuralesDocumentList.size());
+        alojamientoRepository.persist(hostalesDocumentList);
+        Log.infof("Guardados en DB {} hostales.", hostalesDocumentList.size());
+        alojamientoRepository.persist(hosteriasDocumentList);
+        Log.infof("Guardados en DB {} hosterías.", hosteriasDocumentList.size());
+        alojamientoRepository.persist(hotelesDocumentList);
+        Log.infof("Guardados en DB {} hoteles.", hotelesDocumentList.size());
+        alojamientoRepository.persist(hotelesApartDocumentList);
+        Log.infof("Guardados en DB {} hoteles apart.", hotelesApartDocumentList.size());
+        alojamientoRepository.persist(hotelesRuralesDocumentList);
+        Log.infof("Guardados en DB {} hoteles rurales.", hotelesRuralesDocumentList.size());
+        alojamientoRepository.persist(pensionesDocumentList);
+        Log.infof("Guardados en DB {} pensiones.", pensionesDocumentList.size());
+        alojamientoRepository.persist(viviendasTuristicasDocumentList);
+        Log.infof("Guardados en DB {} viviendas turísticas.", viviendasTuristicasDocumentList.size());
+
+        generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
+
         return "Han sido guardados en DB: "+ cuenta+" alojamientos.";
     }
 
