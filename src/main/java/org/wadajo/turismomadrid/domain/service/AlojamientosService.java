@@ -1,5 +1,6 @@
 package org.wadajo.turismomadrid.domain.service;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.wadajo.turismomadrid.application.client.AlojamientosClient;
@@ -21,6 +22,7 @@ public class AlojamientosService {
         this.client = client;
     }
 
+    @CacheResult(cacheName = "alojamientos")
     public List<AlojamientoTuristico> getAlojamientosTotales() {
         var responseRaw = client.getResponseWrapper();
         return getOrderedAlojamientosTuristicosFromWrapper(responseRaw);
