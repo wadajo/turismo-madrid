@@ -50,7 +50,7 @@ class TurismoAcceptanceTests {
             .prettyPeek()
         .then()
             .assertThat()
-            //.body("data.actualizarDB", Matchers.equalTo(RESULTADO_API_ACTUALIZARDB))
+            .body("data.actualizarDB", Matchers.equalTo(RESULTADO_API_ACTUALIZARDB))
             .statusCode(200);
     }
 

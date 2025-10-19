@@ -87,29 +87,29 @@ public class TurismoService {
         }
 
         alojamientoRepository.persist(apartamentosRuralesDocumentList);
-        Log.infof("Guardados en DB {} apartamentos rurales.", apartamentosRuralesDocumentList.size());
+        Log.infof("Guardados en DB %s apartamentos rurales.", apartamentosRuralesDocumentList.size());
         alojamientoRepository.persist(apartTuristicosDocumentList);
-        Log.infof("Guardados en DB {} apart turísticos.", apartTuristicosDocumentList.size());
+        Log.infof("Guardados en DB %s apart turísticos.", apartTuristicosDocumentList.size());
         alojamientoRepository.persist(campingsDocumentList);
-        Log.infof("Guardados en DB {} campings.", campingsDocumentList.size());
+        Log.infof("Guardados en DB %s campings.", campingsDocumentList.size());
         alojamientoRepository.persist(casasHuespedesDocumentList);
-        Log.infof("Guardados en DB {} casas de huéspedes.", casasHuespedesDocumentList.size());
+        Log.infof("Guardados en DB %s casas de huéspedes.", casasHuespedesDocumentList.size());
         alojamientoRepository.persist(casasRuralesDocumentList);
-        Log.infof("Guardados en DB {} casas rurales.", casasRuralesDocumentList.size());
+        Log.infof("Guardados en DB %s casas rurales.", casasRuralesDocumentList.size());
         alojamientoRepository.persist(hostalesDocumentList);
-        Log.infof("Guardados en DB {} hostales.", hostalesDocumentList.size());
+        Log.infof("Guardados en DB %s hostales.", hostalesDocumentList.size());
         alojamientoRepository.persist(hosteriasDocumentList);
-        Log.infof("Guardados en DB {} hosterías.", hosteriasDocumentList.size());
+        Log.infof("Guardados en DB %s hosterías.", hosteriasDocumentList.size());
         alojamientoRepository.persist(hotelesDocumentList);
-        Log.infof("Guardados en DB {} hoteles.", hotelesDocumentList.size());
+        Log.infof("Guardados en DB %s hoteles.", hotelesDocumentList.size());
         alojamientoRepository.persist(hotelesApartDocumentList);
-        Log.infof("Guardados en DB {} hoteles apart.", hotelesApartDocumentList.size());
+        Log.infof("Guardados en DB %s hoteles apart.", hotelesApartDocumentList.size());
         alojamientoRepository.persist(hotelesRuralesDocumentList);
-        Log.infof("Guardados en DB {} hoteles rurales.", hotelesRuralesDocumentList.size());
+        Log.infof("Guardados en DB %s hoteles rurales.", hotelesRuralesDocumentList.size());
         alojamientoRepository.persist(pensionesDocumentList);
-        Log.infof("Guardados en DB {} pensiones.", pensionesDocumentList.size());
+        Log.infof("Guardados en DB %s pensiones.", pensionesDocumentList.size());
         alojamientoRepository.persist(viviendasTuristicasDocumentList);
-        Log.infof("Guardados en DB {} viviendas turísticas.", viviendasTuristicasDocumentList.size());
+        Log.infof("Guardados en DB %s viviendas turísticas.", viviendasTuristicasDocumentList.size());
 
         generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
 
