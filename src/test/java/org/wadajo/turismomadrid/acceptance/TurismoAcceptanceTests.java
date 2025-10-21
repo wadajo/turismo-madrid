@@ -39,6 +39,28 @@ class TurismoAcceptanceTests {
     }
 
     @Test
+    void debeDevolverAlojamientosPorTipoSiHayFiltroCorrecto() throws IOException {
+        JsonNode apartTuristicoQueryJson = new JsonMapper().readTree(new File(ALOJAMIENTOS_QUERY_TIPO_JSON_FILE));
+
+        given()
+            .body(apartTuristicoQueryJson)
+            .contentType(ContentType.JSON)
+        .when()
+            .post(GRAPHQL)
+            .prettyPeek()
+        .then()
+            .assertThat()
+            .body("data.alojamientosTuristicos.size()", Matchers.equalTo(1))
+            .and()
+            .body("data.alojamientosTuristicos[0].via_nombre", Matchers.equalTo("del Buen Suceso"))
+            .and()
+            .body("data.alojamientosTuristicos[0].numero",Matchers.equalTo("3"))
+            .and()
+            .body("data.alojamientosTuristicos[0].alojamiento_tipo",Matchers.equalTo("APART_TURISTICO"))
+            .statusCode(200);
+    }
+
+    @Test
     void debeActualizarDb() throws IOException {
         JsonNode mutationActualizarDbJson = new ObjectMapper().readTree(new File(ALOJAMIENTOS_ACTUALIZAR_FILE));
 
