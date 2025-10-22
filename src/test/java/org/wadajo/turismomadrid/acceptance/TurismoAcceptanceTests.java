@@ -74,7 +74,8 @@ class TurismoAcceptanceTests {
         .then()
             .assertThat()
             .body("data.alojamientosTuristicos", nullValue())
-            .body("errors[0].path[0]", Matchers.equalTo("alojamientosTuristicos"))
+            .body("errors[0].extensions.classification", Matchers.equalTo("ValidationError"))
+            .body("errors[0].message", Matchers.containsString("Literal value not in allowable values for enum 'TipoAlojamiento' - 'EnumValue{name='Horreo'}'"))
             .statusCode(200);
     }
 

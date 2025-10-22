@@ -5,7 +5,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.wadajo.turismomadrid.application.repository.AlojamientoRepository;
 import org.wadajo.turismomadrid.domain.document.AlojamientoDocument;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
-import org.wadajo.turismomadrid.domain.exception.TipoNoValidoException;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
 import org.wadajo.turismomadrid.infrastructure.mapper.AlojamientoDocumentMapper;
 
@@ -17,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento.*;
 import static org.wadajo.turismomadrid.infrastructure.constants.Constants.CONTADO_UN;
-import static org.wadajo.turismomadrid.infrastructure.constants.Constants.MENSAJE_TIPOS_VALIDOS;
 
 @ApplicationScoped
 public class TurismoService {
@@ -127,19 +125,12 @@ public class TurismoService {
         Log.info("Borrada alojamientos");
     }
 
-    public List<AlojamientoTuristico> getAlojamientosByType(String tipo) throws TipoNoValidoException {
-        try {
-            var tipoValido=TipoAlojamiento.valueOf(tipo);
-            var listaFiltrada = alojamientosService.getAlojamientosTotales().stream()
-                .filter(alojamientoTuristico -> alojamientoTuristico.alojamiento_tipo() == tipoValido)
-                .toList();
-            generarMapaConLaCuenta(listaFiltrada);
-            return listaFiltrada;
-        } catch (IllegalArgumentException e) {
-            Log.errorf("Tipo de alojamiento turístico no válido: %s", tipo);
-            throw new TipoNoValidoException(
-                String.format("Tipo de alojamiento turístico no válido: %s. %s", tipo, MENSAJE_TIPOS_VALIDOS), e);
-        }
+    public List<AlojamientoTuristico> getAlojamientosByType(TipoAlojamiento tipoValido) {
+        var listaFiltrada = alojamientosService.getAlojamientosTotales().stream()
+            .filter(alojamientoTuristico -> alojamientoTuristico.alojamiento_tipo() == tipoValido)
+            .toList();
+        generarMapaConLaCuenta(listaFiltrada);
+        return listaFiltrada;
     }
 
     public String borrarTodosLosAlojamientosEnDb() {
