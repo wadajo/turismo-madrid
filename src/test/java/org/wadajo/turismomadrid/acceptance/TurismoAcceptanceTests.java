@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.nullValue;
 import static org.wadajo.turismomadrid.util.TestConstants.*;
 
 @QuarkusTest
@@ -57,6 +58,23 @@ class TurismoAcceptanceTests {
             .body("data.alojamientosTuristicos[0].numero",Matchers.equalTo("3"))
             .and()
             .body("data.alojamientosTuristicos[0].alojamiento_tipo",Matchers.equalTo("APART_TURISTICO"))
+            .statusCode(200);
+    }
+
+    @Test
+    void debeFallarSiSePidenAlojamientosConTipoIncorrecto() throws IOException {
+        JsonNode apartTuristicoQueryJson = new JsonMapper().readTree(new File(ALOJAMIENTOS_QUERY_TIPO_KO_JSON_FILE));
+
+        given()
+            .body(apartTuristicoQueryJson)
+            .contentType(ContentType.JSON)
+        .when()
+            .post(GRAPHQL)
+            .prettyPeek()
+        .then()
+            .assertThat()
+            .body("data.alojamientosTuristicos", nullValue())
+            .body("errors[0].path[0]", Matchers.equalTo("alojamientosTuristicos"))
             .statusCode(200);
     }
 

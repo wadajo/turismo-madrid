@@ -4,7 +4,6 @@ import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
-import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
 import org.wadajo.turismomadrid.domain.service.TurismoService;
 
@@ -24,7 +23,7 @@ public class AlojamientosResource {
     @Description("Devuelve todos los alojamientos turisticos de la Comunidad de Madrid")
     public List<AlojamientoTuristico> alojamientosTuristicos(String tipo) {
         if (!Objects.isNull(tipo)) {
-            return service.getAlojamientosByType(TipoAlojamiento.valueOf(tipo));
+            return service.getAlojamientosByType(tipo);
         } else {
             return service.getAlojamientosTuristicosEnRemoto();
         }

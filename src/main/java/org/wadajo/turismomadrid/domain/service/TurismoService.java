@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.wadajo.turismomadrid.application.repository.AlojamientoRepository;
 import org.wadajo.turismomadrid.domain.document.AlojamientoDocument;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
+import org.wadajo.turismomadrid.domain.exception.TipoNoValidoException;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
 import org.wadajo.turismomadrid.infrastructure.mapper.AlojamientoDocumentMapper;
 
@@ -125,12 +126,18 @@ public class TurismoService {
         Log.info("Borrada alojamientos");
     }
 
-    public List<AlojamientoTuristico> getAlojamientosByType(TipoAlojamiento tipo) {
-        var listaFiltrada = alojamientosService.getAlojamientosTotales().stream()
-            .filter(alojamientoTuristico -> alojamientoTuristico.alojamiento_tipo() == tipo)
-            .toList();
-        generarMapaConLaCuenta(listaFiltrada);
-        return listaFiltrada;
+    public List<AlojamientoTuristico> getAlojamientosByType(String tipo) throws TipoNoValidoException {
+        try {
+            var tipoValido=TipoAlojamiento.valueOf(tipo);
+            var listaFiltrada = alojamientosService.getAlojamientosTotales().stream()
+                .filter(alojamientoTuristico -> alojamientoTuristico.alojamiento_tipo() == tipoValido)
+                .toList();
+            generarMapaConLaCuenta(listaFiltrada);
+            return listaFiltrada;
+        } catch (IllegalArgumentException e) {
+            Log.errorf("Tipo de alojamiento turístico no válido: %s", tipo);
+            throw new TipoNoValidoException(String.format("Tipo de alojamiento turístico no válido: %s",tipo), e);
+        }
     }
 
     public String borrarTodosLosAlojamientosEnDb() {

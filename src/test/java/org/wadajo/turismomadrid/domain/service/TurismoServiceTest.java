@@ -7,11 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.wadajo.turismomadrid.application.repository.AlojamientoRepository;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
+import org.wadajo.turismomadrid.domain.exception.TipoNoValidoException;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -65,12 +67,20 @@ class TurismoServiceTest {
 
     @Test
     void debeFiltrarAlojamientosSegunElTipoSolicitado() {
-        var filtrados = turismoService.getAlojamientosByType(TipoAlojamiento.HOSTERIAS);
+        var filtrados = turismoService.getAlojamientosByType(TipoAlojamiento.HOSTERIAS.toString());
 
         assertThat(filtrados)
             .hasSize(1)
             .first()
             .hasFieldOrPropertyWithValue("via_nombre", "Mayor");
+    }
+
+    @Test
+    void debeArrojarExcepcionSiElTipoNoEsValido() {
+        assertThatThrownBy(() -> {
+            turismoService.getAlojamientosByType("Horreo");
+        }).isInstanceOf(TipoNoValidoException.class)
+          .hasMessageContaining("Tipo de alojamiento turístico no válido: Horreo");
     }
 
     @Test
