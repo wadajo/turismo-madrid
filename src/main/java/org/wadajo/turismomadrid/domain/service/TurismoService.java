@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento.*;
 import static org.wadajo.turismomadrid.infrastructure.constants.Constants.CONTADO_UN;
+import static org.wadajo.turismomadrid.infrastructure.constants.Constants.MENSAJE_TIPOS_VALIDOS;
 
 @ApplicationScoped
 public class TurismoService {
@@ -136,7 +137,8 @@ public class TurismoService {
             return listaFiltrada;
         } catch (IllegalArgumentException e) {
             Log.errorf("Tipo de alojamiento turístico no válido: %s", tipo);
-            throw new TipoNoValidoException(String.format("Tipo de alojamiento turístico no válido: %s",tipo), e);
+            throw new TipoNoValidoException(
+                String.format("Tipo de alojamiento turístico no válido: %s. %s", tipo, MENSAJE_TIPOS_VALIDOS), e);
         }
     }
 
