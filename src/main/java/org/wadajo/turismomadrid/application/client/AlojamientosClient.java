@@ -1,12 +1,18 @@
 package org.wadajo.turismomadrid.application.client;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.AlojamientosTuristicosResponseDto;
 
+@ApplicationScoped
 @RegisterRestClient(configKey = "turismo-madrid-api")
 public interface AlojamientosClient {
 
     @GET
-    AlojamientosTuristicosResponseDto getResponseRaw();
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    AlojamientosTuristicosResponseDto getResponseWrapper();
+
 }

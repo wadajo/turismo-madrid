@@ -1,4 +1,7 @@
-# turismo-madrid
+# Alojamientos Turísticos en Madrid (GraphQL + Quarkus)
+
+### Intro
+This is a backend application for the management and query of tourist accommodations in the Community of Madrid, based on official Open Data (DA).
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

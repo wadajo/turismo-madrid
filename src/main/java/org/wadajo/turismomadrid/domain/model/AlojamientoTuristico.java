@@ -1,23 +1,40 @@
 package org.wadajo.turismomadrid.domain.model;
 
-import org.jspecify.annotations.NullMarked;
+import org.eclipse.microprofile.graphql.Description;
+import org.eclipse.microprofile.graphql.Type;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
 
-@NullMarked
-public sealed interface AlojamientoTuristico {
-    
-    record ApartamentoRural(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record ApartTuristico(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record Camping(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record CasaHuespedes(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record CasaRural(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record Hostal(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record Hosteria(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record Hotel(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record HotelApart(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record HotelRural(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record Pension(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-    record ViviendaTuristica(String via_tipo, String via_nombre, String numero, String portal, String bloque, String planta, String puerta, String signatura, String categoria, String escalera, String denominacion, String cdpostal, String localidad,TipoAlojamiento alojamiento_tipo) implements AlojamientoTuristico { }
-}
+@Type("AlojamientoTuristico")
+@Description("Representa un alojamiento turístico en la Comunidad de Madrid")
+public record AlojamientoTuristico (
+        @Description("Tipo de vía del alojamiento")
+        String via_tipo,
+        @Description("Nombre de la vía del alojamiento")
+        String via_nombre,
+        @Description("Número del alojamiento")
+        String numero,
+        @Description("Portal del alojamiento")
+        String portal,
+        @Description("Bloque del alojamiento")
+        String bloque,
+        @Description("Planta del alojamiento")
+        String planta,
+        @Description("Puerta del alojamiento")
+        String puerta,
+        @Description("Signatura del alojamiento")
+        String signatura,
+        @Description("Categoría del alojamiento")
+        String categoria,
+        @Description("Escalera del alojamiento")
+        String escalera,
+        @Description("Denominación del alojamiento")
+        String denominacion,
+        @Description("Código postal del alojamiento")
+        String cdpostal,
+        @Description("Localidad del alojamiento")
+        String localidad,
+        @Description("Tipo de alojamiento turístico")
+        TipoAlojamiento alojamiento_tipo
+) {}
 
 
