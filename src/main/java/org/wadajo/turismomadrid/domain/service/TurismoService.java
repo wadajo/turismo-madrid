@@ -46,94 +46,58 @@ public class TurismoService {
         AtomicLong cuentaGuardados = new AtomicLong();
         AtomicLong cuentaExistentes = new AtomicLong();
 
-        var apartamentosRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var apartTuristicosDocumentList = new ArrayList<AlojamientoDocument>();
-        var campingsDocumentList = new ArrayList<AlojamientoDocument>();
-        var casasHuespedesDocumentList = new ArrayList<AlojamientoDocument>();
-        var casasRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hostalesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hosteriasDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesApartDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var pensionesDocumentList = new ArrayList<AlojamientoDocument>();
-        var viviendasTuristicasDocumentList = new ArrayList<AlojamientoDocument>();
+        var alojamientoDocumentList = new ArrayList<AlojamientoDocument>();
 
         for (AlojamientoTuristico unAlojamientoEnRemoto : todosLosAlojamientosEnRemoto) {
             final AlojamientoDocument unAlojamientoDocumentNuevo = convertToAlojamientoDocument(unAlojamientoEnRemoto);
-            PanacheQuery<AlojamientoDocument> query= AlojamientoDocument.find(Constants.QUERY_EXISTE,
-                    unAlojamientoDocumentNuevo.via_nombre,
-                    unAlojamientoDocumentNuevo.via_tipo,
-                    Objects.requireNonNullElse(unAlojamientoDocumentNuevo.numero,""),
-                    Objects.requireNonNullElse(unAlojamientoDocumentNuevo.codpostal,""),
-                    unAlojamientoDocumentNuevo.localidad,
-                    Objects.requireNonNullElse(unAlojamientoDocumentNuevo.planta,""),
-                    Objects.requireNonNullElse(unAlojamientoDocumentNuevo.bloque,""),
-                    Objects.requireNonNullElse(unAlojamientoDocumentNuevo.puerta,""));
+            PanacheQuery<AlojamientoDocument> query= buscarSiAlojamientoExiste(unAlojamientoDocumentNuevo);
             if (query.firstResultOptional().isPresent()) {
                 Log.debugf(unAlojamientoEnRemoto.toString()+" ya existe en la base de datos. Se omite su guardado.");
                 cuentaExistentes.incrementAndGet();
                 continue;
             }
             cuentaGuardados.incrementAndGet();
-            switch (unAlojamientoEnRemoto.alojamiento_tipo()) {
-                case APART_TURISTICO ->
-                    apartTuristicosDocumentList.add(unAlojamientoDocumentNuevo);
-                case APARTAMENTO_RURAL ->
-                    apartamentosRuralesDocumentList.add(unAlojamientoDocumentNuevo);
-                case CAMPING ->
-                    campingsDocumentList.add(unAlojamientoDocumentNuevo);
-                case CASA_HUESPEDES ->
-                    casasHuespedesDocumentList.add(unAlojamientoDocumentNuevo);
-                case CASA_RURAL ->
-                    casasRuralesDocumentList.add(unAlojamientoDocumentNuevo);
-                case HOSTAL ->
-                    hostalesDocumentList.add(unAlojamientoDocumentNuevo);
-                case HOSTERIAS ->
-                    hosteriasDocumentList.add(unAlojamientoDocumentNuevo);
-                case HOTEL ->
-                    hotelesDocumentList.add(unAlojamientoDocumentNuevo);
-                case HOTEL_APART ->
-                    hotelesApartDocumentList.add(unAlojamientoDocumentNuevo);
-                case HOTEL_RURAL ->
-                    hotelesRuralesDocumentList.add(unAlojamientoDocumentNuevo);
-                case PENSION ->
-                    pensionesDocumentList.add(unAlojamientoDocumentNuevo);
-                case VIVIENDAS_TURISTICAS ->
-                    viviendasTuristicasDocumentList.add(unAlojamientoDocumentNuevo);
-            }
+            alojamientoDocumentList.add(unAlojamientoDocumentNuevo);
         }
 
-        alojamientoRepository.persist(apartamentosRuralesDocumentList);
-        Log.infof("Guardados en DB %s apartamentos rurales.", apartamentosRuralesDocumentList.size());
-        alojamientoRepository.persist(apartTuristicosDocumentList);
-        Log.infof("Guardados en DB %s apart turísticos.", apartTuristicosDocumentList.size());
-        alojamientoRepository.persist(campingsDocumentList);
-        Log.infof("Guardados en DB %s campings.", campingsDocumentList.size());
-        alojamientoRepository.persist(casasHuespedesDocumentList);
-        Log.infof("Guardados en DB %s casas de huéspedes.", casasHuespedesDocumentList.size());
-        alojamientoRepository.persist(casasRuralesDocumentList);
-        Log.infof("Guardados en DB %s casas rurales.", casasRuralesDocumentList.size());
-        alojamientoRepository.persist(hostalesDocumentList);
-        Log.infof("Guardados en DB %s hostales.", hostalesDocumentList.size());
-        alojamientoRepository.persist(hosteriasDocumentList);
-        Log.infof("Guardados en DB %s hosterías.", hosteriasDocumentList.size());
-        alojamientoRepository.persist(hotelesDocumentList);
-        Log.infof("Guardados en DB %s hoteles.", hotelesDocumentList.size());
-        alojamientoRepository.persist(hotelesApartDocumentList);
-        Log.infof("Guardados en DB %s hoteles apart.", hotelesApartDocumentList.size());
-        alojamientoRepository.persist(hotelesRuralesDocumentList);
-        Log.infof("Guardados en DB %s hoteles rurales.", hotelesRuralesDocumentList.size());
-        alojamientoRepository.persist(pensionesDocumentList);
-        Log.infof("Guardados en DB %s pensiones.", pensionesDocumentList.size());
-        alojamientoRepository.persist(viviendasTuristicasDocumentList);
-        Log.infof("Guardados en DB %s viviendas turísticas.", viviendasTuristicasDocumentList.size());
+        alojamientoRepository.persist(alojamientoDocumentList);
+        Log.infof("Guardados en DB %s apartamentos rurales.",contarAlojamientosTipo(alojamientoDocumentList, APARTAMENTO_RURAL));
+        Log.infof("Guardados en DB %s apart turísticos.", contarAlojamientosTipo(alojamientoDocumentList, APART_TURISTICO));
+        Log.infof("Guardados en DB %s campings.", contarAlojamientosTipo(alojamientoDocumentList, CAMPING));
+        Log.infof("Guardados en DB %s casas de huéspedes.", contarAlojamientosTipo(alojamientoDocumentList, CASA_HUESPEDES));
+        Log.infof("Guardados en DB %s casas rurales.", contarAlojamientosTipo(alojamientoDocumentList, CASA_RURAL));
+        Log.infof("Guardados en DB %s hostales.", contarAlojamientosTipo(alojamientoDocumentList, HOSTAL));
+        Log.infof("Guardados en DB %s hosterías.", contarAlojamientosTipo(alojamientoDocumentList, HOSTERIAS));
+        Log.infof("Guardados en DB %s hoteles.", contarAlojamientosTipo(alojamientoDocumentList, HOTEL));
+        Log.infof("Guardados en DB %s hoteles apart.",  contarAlojamientosTipo(alojamientoDocumentList, HOTEL_APART));
+        Log.infof("Guardados en DB %s hoteles rurales.",  contarAlojamientosTipo(alojamientoDocumentList, HOTEL_RURAL));
+        Log.infof("Guardados en DB %s pensiones.",  contarAlojamientosTipo(alojamientoDocumentList, PENSION));
+        Log.infof("Guardados en DB %s viviendas turísticas.",  contarAlojamientosTipo(alojamientoDocumentList, VIVIENDAS_TURISTICAS));
 
         generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
         Log.infof("Han sido guardados en DB: %s alojamientos.", cuentaGuardados);
         Log.infof("Ya existían en DB: %s alojamientos que no se han guardado nuevamente.", cuentaExistentes);
 
         return "Han sido guardados en DB: "+ cuentaGuardados+" alojamientos.";
+    }
+
+    private static PanacheQuery<AlojamientoDocument> buscarSiAlojamientoExiste(AlojamientoDocument unAlojamientoDocumentNuevo) {
+        return AlojamientoDocument.find(Constants.QUERY_EXISTE,
+            unAlojamientoDocumentNuevo.via_nombre,
+            unAlojamientoDocumentNuevo.via_tipo,
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.numero, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.codpostal, ""),
+            unAlojamientoDocumentNuevo.localidad,
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.planta, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.bloque, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.puerta, ""));
+    }
+
+    private static long contarAlojamientosTipo(ArrayList<AlojamientoDocument> alojamientoDocumentList, TipoAlojamiento tipoAlojamiento) {
+        return alojamientoDocumentList
+            .stream()
+            .filter(alojamientoDocument -> alojamientoDocument.alojamiento_tipo.equals(tipoAlojamiento.printValue))
+            .count();
     }
 
     private AlojamientoDocument convertToAlojamientoDocument(AlojamientoTuristico alojamientoTuristicoEnRemoto) {
