@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.wadajo.turismomadrid.MyWiremockResource;
@@ -27,7 +26,6 @@ class TurismoAcceptanceTests {
 
         given()
             .body(alojamientosQueryJson)
-            .contentType(ContentType.JSON)
         .when()
             .post(GRAPHQL)
             .prettyPeek()
@@ -45,7 +43,6 @@ class TurismoAcceptanceTests {
 
         given()
             .body(apartTuristicoQueryJson)
-            .contentType(ContentType.JSON)
         .when()
             .post(GRAPHQL)
             .prettyPeek()
@@ -67,7 +64,6 @@ class TurismoAcceptanceTests {
 
         given()
             .body(apartTuristicoQueryJson)
-            .contentType(ContentType.JSON)
         .when()
             .post(GRAPHQL)
             .prettyPeek()
@@ -85,7 +81,6 @@ class TurismoAcceptanceTests {
 
         given()
             .body(mutationActualizarDbJson)
-            .contentType(ContentType.JSON)
         .when()
             .post(GRAPHQL)
             .prettyPeek()
@@ -96,13 +91,37 @@ class TurismoAcceptanceTests {
     }
 
     @Test
+    void debeActualizarDbCorrectamenteCuandoHayYaAlojamientosIguales() throws IOException {
+        JsonNode mutationActualizarDbJson = new ObjectMapper().readTree(new File(ALOJAMIENTOS_ACTUALIZAR_FILE));
+
+        given()
+            .body(mutationActualizarDbJson)
+        .when()
+            .post(GRAPHQL)
+            .prettyPeek()
+        .then()
+            .assertThat()
+            .body("data.actualizarDB", Matchers.equalTo(RESULTADO_API_ACTUALIZARDB))
+            .statusCode(200);
+
+        given()
+            .body(mutationActualizarDbJson)
+        .when()
+            .post(GRAPHQL)
+            .prettyPeek()
+        .then()
+            .assertThat()
+            .body("data.actualizarDB", Matchers.equalTo("Han sido guardados en DB: 0 alojamientos."))
+            .statusCode(200);
+    }
+
+    @Test
     void debeBorrarTodosLosAlojamientosTuristicosAlEjecutarElBorrarTodo() throws IOException {
         JsonNode mutationBorrarTodoJson = new ObjectMapper().readTree(new File(ALOJAMIENTOS_BORRAR_FILE));
 
         given()
             .body(mutationBorrarTodoJson)
-            .contentType(ContentType.JSON)
-        .when()
+            .when()
             .post(GRAPHQL)
             .prettyPeek()
         .then()

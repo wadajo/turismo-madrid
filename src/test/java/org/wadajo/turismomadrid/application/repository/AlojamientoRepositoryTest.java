@@ -3,6 +3,7 @@ package org.wadajo.turismomadrid.application.repository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.wadajo.turismomadrid.domain.document.AlojamientoDocument;
 
@@ -13,6 +14,11 @@ class AlojamientoRepositoryTest {
 
     @Inject
     AlojamientoRepository alojamientoRepository;
+
+    @BeforeEach
+    void setUp() {
+        alojamientoRepository.deleteAll();
+    }
 
     @Test
     void debeHaberElementosTrasGuardarlos() {

@@ -1,21 +1,23 @@
 package org.wadajo.turismomadrid.domain.service;
 
 import io.quarkus.logging.Log;
+import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.wadajo.turismomadrid.application.repository.AlojamientoRepository;
 import org.wadajo.turismomadrid.domain.document.AlojamientoDocument;
 import org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento;
 import org.wadajo.turismomadrid.domain.model.AlojamientoTuristico;
+import org.wadajo.turismomadrid.infrastructure.constants.Constants;
 import org.wadajo.turismomadrid.infrastructure.mapper.AlojamientoDocumentMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.wadajo.turismomadrid.domain.dto.cmadrid.enums.TipoAlojamiento.*;
-import static org.wadajo.turismomadrid.infrastructure.constants.Constants.CONTADO_UN;
 
 @ApplicationScoped
 public class TurismoService {
@@ -38,82 +40,64 @@ public class TurismoService {
         return listaRaw;
     }
 
-    public String guardarTodosLosAlojamientosRemotosEnDb(){
+    public String guardarAlojamientosRemotosNuevosEnDb(){
         List<AlojamientoTuristico> todosLosAlojamientosEnRemoto = alojamientosService.getAlojamientosTotales();
         Log.infof("Total alojamientos turísticos en origen: %d", todosLosAlojamientosEnRemoto.size());
-        AtomicLong cuenta = new AtomicLong();
+        AtomicLong cuentaGuardados = new AtomicLong();
+        AtomicLong cuentaExistentes = new AtomicLong();
 
-        var apartamentosRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var apartTuristicosDocumentList = new ArrayList<AlojamientoDocument>();
-        var campingsDocumentList = new ArrayList<AlojamientoDocument>();
-        var casasHuespedesDocumentList = new ArrayList<AlojamientoDocument>();
-        var casasRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hostalesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hosteriasDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesApartDocumentList = new ArrayList<AlojamientoDocument>();
-        var hotelesRuralesDocumentList = new ArrayList<AlojamientoDocument>();
-        var pensionesDocumentList = new ArrayList<AlojamientoDocument>();
-        var viviendasTuristicasDocumentList = new ArrayList<AlojamientoDocument>();
+        var alojamientoDocumentList = new ArrayList<AlojamientoDocument>();
 
         for (AlojamientoTuristico unAlojamientoEnRemoto : todosLosAlojamientosEnRemoto) {
-            cuenta.incrementAndGet();
-            switch (unAlojamientoEnRemoto.alojamiento_tipo()) {
-                case APART_TURISTICO ->
-                    apartTuristicosDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case APARTAMENTO_RURAL ->
-                    apartamentosRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case CAMPING ->
-                    campingsDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case CASA_HUESPEDES ->
-                    casasHuespedesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case CASA_RURAL ->
-                    casasRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case HOSTAL ->
-                    hostalesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case HOSTERIAS ->
-                    hosteriasDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case HOTEL ->
-                    hotelesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case HOTEL_APART ->
-                    hotelesApartDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case HOTEL_RURAL ->
-                    hotelesRuralesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case PENSION ->
-                    pensionesDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
-                case VIVIENDAS_TURISTICAS ->
-                    viviendasTuristicasDocumentList.add(convertToAlojamientoDocument(unAlojamientoEnRemoto));
+            final AlojamientoDocument unAlojamientoDocumentNuevo = convertToAlojamientoDocument(unAlojamientoEnRemoto);
+            PanacheQuery<AlojamientoDocument> query= buscarSiAlojamientoExiste(unAlojamientoDocumentNuevo);
+            if (query.firstResultOptional().isPresent()) {
+                Log.debugf(unAlojamientoEnRemoto.toString()+" ya existe en la base de datos. Se omite su guardado.");
+                cuentaExistentes.incrementAndGet();
+                continue;
             }
+            cuentaGuardados.incrementAndGet();
+            alojamientoDocumentList.add(unAlojamientoDocumentNuevo);
         }
 
-        alojamientoRepository.persist(apartamentosRuralesDocumentList);
-        Log.infof("Guardados en DB %s apartamentos rurales.", apartamentosRuralesDocumentList.size());
-        alojamientoRepository.persist(apartTuristicosDocumentList);
-        Log.infof("Guardados en DB %s apart turísticos.", apartTuristicosDocumentList.size());
-        alojamientoRepository.persist(campingsDocumentList);
-        Log.infof("Guardados en DB %s campings.", campingsDocumentList.size());
-        alojamientoRepository.persist(casasHuespedesDocumentList);
-        Log.infof("Guardados en DB %s casas de huéspedes.", casasHuespedesDocumentList.size());
-        alojamientoRepository.persist(casasRuralesDocumentList);
-        Log.infof("Guardados en DB %s casas rurales.", casasRuralesDocumentList.size());
-        alojamientoRepository.persist(hostalesDocumentList);
-        Log.infof("Guardados en DB %s hostales.", hostalesDocumentList.size());
-        alojamientoRepository.persist(hosteriasDocumentList);
-        Log.infof("Guardados en DB %s hosterías.", hosteriasDocumentList.size());
-        alojamientoRepository.persist(hotelesDocumentList);
-        Log.infof("Guardados en DB %s hoteles.", hotelesDocumentList.size());
-        alojamientoRepository.persist(hotelesApartDocumentList);
-        Log.infof("Guardados en DB %s hoteles apart.", hotelesApartDocumentList.size());
-        alojamientoRepository.persist(hotelesRuralesDocumentList);
-        Log.infof("Guardados en DB %s hoteles rurales.", hotelesRuralesDocumentList.size());
-        alojamientoRepository.persist(pensionesDocumentList);
-        Log.infof("Guardados en DB %s pensiones.", pensionesDocumentList.size());
-        alojamientoRepository.persist(viviendasTuristicasDocumentList);
-        Log.infof("Guardados en DB %s viviendas turísticas.", viviendasTuristicasDocumentList.size());
+        alojamientoRepository.persist(alojamientoDocumentList);
+        Log.infof("Guardados en DB %s apartamentos rurales.",contarAlojamientosTipo(alojamientoDocumentList, APARTAMENTO_RURAL));
+        Log.infof("Guardados en DB %s apart turísticos.", contarAlojamientosTipo(alojamientoDocumentList, APART_TURISTICO));
+        Log.infof("Guardados en DB %s campings.", contarAlojamientosTipo(alojamientoDocumentList, CAMPING));
+        Log.infof("Guardados en DB %s casas de huéspedes.", contarAlojamientosTipo(alojamientoDocumentList, CASA_HUESPEDES));
+        Log.infof("Guardados en DB %s casas rurales.", contarAlojamientosTipo(alojamientoDocumentList, CASA_RURAL));
+        Log.infof("Guardados en DB %s hostales.", contarAlojamientosTipo(alojamientoDocumentList, HOSTAL));
+        Log.infof("Guardados en DB %s hosterías.", contarAlojamientosTipo(alojamientoDocumentList, HOSTERIAS));
+        Log.infof("Guardados en DB %s hoteles.", contarAlojamientosTipo(alojamientoDocumentList, HOTEL));
+        Log.infof("Guardados en DB %s hoteles apart.",  contarAlojamientosTipo(alojamientoDocumentList, HOTEL_APART));
+        Log.infof("Guardados en DB %s hoteles rurales.",  contarAlojamientosTipo(alojamientoDocumentList, HOTEL_RURAL));
+        Log.infof("Guardados en DB %s pensiones.",  contarAlojamientosTipo(alojamientoDocumentList, PENSION));
+        Log.infof("Guardados en DB %s viviendas turísticas.",  contarAlojamientosTipo(alojamientoDocumentList, VIVIENDAS_TURISTICAS));
 
         generarMapaConLaCuenta(todosLosAlojamientosEnRemoto);
+        Log.infof("Han sido guardados en DB: %s alojamientos.", cuentaGuardados);
+        Log.infof("Ya existían en DB: %s alojamientos que no se han guardado nuevamente.", cuentaExistentes);
 
-        return "Han sido guardados en DB: "+ cuenta+" alojamientos.";
+        return "Han sido guardados en DB: "+ cuentaGuardados+" alojamientos.";
+    }
+
+    private static PanacheQuery<AlojamientoDocument> buscarSiAlojamientoExiste(AlojamientoDocument unAlojamientoDocumentNuevo) {
+        return AlojamientoDocument.find(Constants.QUERY_EXISTE,
+            unAlojamientoDocumentNuevo.via_nombre,
+            unAlojamientoDocumentNuevo.via_tipo,
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.numero, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.codpostal, ""),
+            unAlojamientoDocumentNuevo.localidad,
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.planta, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.bloque, ""),
+            Objects.requireNonNullElse(unAlojamientoDocumentNuevo.puerta, ""));
+    }
+
+    private static long contarAlojamientosTipo(ArrayList<AlojamientoDocument> alojamientoDocumentList, TipoAlojamiento tipoAlojamiento) {
+        return alojamientoDocumentList
+            .stream()
+            .filter(alojamientoDocument -> alojamientoDocument.alojamiento_tipo.equals(tipoAlojamiento.printValue))
+            .count();
     }
 
     private AlojamientoDocument convertToAlojamientoDocument(AlojamientoTuristico alojamientoTuristicoEnRemoto) {
@@ -153,23 +137,23 @@ public class TurismoService {
         AtomicLong pensiones = new AtomicLong();
         AtomicLong viviendasTuristicas = new AtomicLong();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (var executor = Executors.newSingleThreadExecutor()) {
             listaFinal
                 .forEach(unAlojamiento ->
                     executor.submit(() -> {
                         switch (unAlojamiento.alojamiento_tipo()){
-                            case APARTAMENTO_RURAL -> logAndCount(apartamentosRurales, TipoAlojamiento.APARTAMENTO_RURAL);
-                            case APART_TURISTICO -> logAndCount(apartTuristicos, TipoAlojamiento.APART_TURISTICO);
-                            case CAMPING -> logAndCount(campings, TipoAlojamiento.CAMPING);
-                            case CASA_HUESPEDES -> logAndCount(casasHuespedes, TipoAlojamiento.CASA_HUESPEDES);
-                            case  CASA_RURAL -> logAndCount(casasRurales, TipoAlojamiento.CASA_RURAL);
-                            case HOSTAL -> logAndCount(hostales, TipoAlojamiento.HOSTAL);
-                            case HOSTERIAS -> logAndCount(hosterias, TipoAlojamiento.HOSTERIAS);
-                            case HOTEL -> logAndCount(hoteles, TipoAlojamiento.HOTEL);
-                            case HOTEL_APART -> logAndCount(apartHoteles, TipoAlojamiento.HOTEL_APART);
-                            case HOTEL_RURAL -> logAndCount(hotelesRurales, TipoAlojamiento.HOTEL_RURAL);
-                            case PENSION -> logAndCount(pensiones, TipoAlojamiento.PENSION);
-                            case VIVIENDAS_TURISTICAS -> logAndCount(viviendasTuristicas, TipoAlojamiento.VIVIENDAS_TURISTICAS);
+                            case APARTAMENTO_RURAL -> logAndCount(apartamentosRurales);
+                            case APART_TURISTICO -> logAndCount(apartTuristicos);
+                            case CAMPING -> logAndCount(campings);
+                            case CASA_HUESPEDES -> logAndCount(casasHuespedes);
+                            case  CASA_RURAL -> logAndCount(casasRurales);
+                            case HOSTAL -> logAndCount(hostales);
+                            case HOSTERIAS -> logAndCount(hosterias);
+                            case HOTEL -> logAndCount(hoteles);
+                            case HOTEL_APART -> logAndCount(apartHoteles);
+                            case HOTEL_RURAL -> logAndCount(hotelesRurales);
+                            case PENSION -> logAndCount(pensiones);
+                            case VIVIENDAS_TURISTICAS -> logAndCount(viviendasTuristicas);
                         }
                     }
                 ));
@@ -193,13 +177,8 @@ public class TurismoService {
         }
     }
 
-    private static synchronized void logAndCount(AtomicLong cuenta, TipoAlojamiento tipoAlojamiento) {
+    private static void logAndCount(AtomicLong cuenta) {
         cuenta.incrementAndGet();
-        logCount(tipoAlojamiento);
-    }
-
-    private static void logCount(TipoAlojamiento alojamiento) {
-        Log.debugf("%s %s.", CONTADO_UN, alojamiento);
     }
 
 }

@@ -84,7 +84,7 @@ class TurismoServiceTest {
 
     @Test
     void debeInvocarElRepositorioParaGuardar(){
-        var resultado = turismoService.guardarTodosLosAlojamientosRemotosEnDb();
+        var resultado = turismoService.guardarAlojamientosRemotosNuevosEnDb();
 
         assertThat(resultado).isEqualTo("Han sido guardados en DB: 12 alojamientos.");
     }
